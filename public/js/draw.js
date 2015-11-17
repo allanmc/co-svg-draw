@@ -19,20 +19,34 @@ function setTool(tool) {
 }
 
 draw.on('mousedown', function(e){
-    rect = draw.rect().fill(color);
+    if (tool == 'line') {
+        rect = draw.line(0, 0, 0, 0).stroke({ width: 1 }).fill(color);
+    } else {
+        rect = draw.rect().fill(color);
+    }
     rect.draw(e);
 }, false);
 
 draw.on('mousemove', function (e) {
 	if (e.buttons == 1) {
-        var tbox = rect.tbox();
-        drawEvent.width = tbox.width;
-        drawEvent.height = tbox.height;
-        drawEvent.x = tbox.x;
-        drawEvent.y = tbox.y;
-        drawEvent.type = 'rect';
+
+        if (tool == 'line') {
+            var points = rect.array().value;
+            drawEvent.x = points[0][0];
+            drawEvent.y = points[0][1];
+            drawEvent.x2 = points[1][0];
+            drawEvent.y2 = points[1][1];
+        } else {
+            var tbox = rect.tbox();
+            drawEvent.width = tbox.width;
+            drawEvent.height = tbox.height;
+            drawEvent.x = tbox.x;
+            drawEvent.y = tbox.y;
+        }
+        drawEvent.type = tool;
         drawEvent.guid = guid;
         drawEvent.color = color;
+
 
         socket.emit('drawingProgress', drawEvent);
 	}
@@ -41,14 +55,22 @@ draw.on('mousemove', function (e) {
 draw.on('mouseup', function(e){
 	rect.draw('stop', e);
 
-    var tbox = rect.tbox();
-	drawEvent.width = tbox.width;
-	drawEvent.height = tbox.height;
-	drawEvent.x = tbox.x;
-	drawEvent.y = tbox.y;
-	drawEvent.type = 'rect';
-	drawEvent.guid = guid;
-	drawEvent.color = color;
+    if (tool == 'line') {
+        var points = rect.array().value;
+        drawEvent.x = points[0][0];
+        drawEvent.y = points[0][1];
+        drawEvent.x2 = points[1][0];
+        drawEvent.y2 = points[1][1];
+    } else {
+        var tbox = rect.tbox();
+        drawEvent.width = tbox.width;
+        drawEvent.height = tbox.height;
+        drawEvent.x = tbox.x;
+        drawEvent.y = tbox.y;
+    }
+    drawEvent.type = tool;
+    drawEvent.guid = guid;
+    drawEvent.color = color;
 
 	socket.emit('drawing', drawEvent);
 }, false);
@@ -74,14 +96,24 @@ function drawObject(drawEvent){
             inProgressRectMap.get(drawEvent.guid).remove();
             inProgressRectMap.delete(drawEvent.guid);
         }
-        var rect = draw.rect(drawEvent.width,drawEvent.height).move(drawEvent.x,drawEvent.y).fill(drawEvent.color);
+        if (drawEvent.type == 'line') {
+            draw.line(drawEvent.x, drawEvent.y, drawEvent.x2, drawEvent.y2).stroke({ width: 1 }).fill(color);
+        } else {
+            draw.rect(drawEvent.width, drawEvent.height).move(drawEvent.x,drawEvent.y).fill(drawEvent.color);
+        }
+
     }
 }
 
 function drawObjectInProgress(drawEvent){
     if(guid != drawEvent.guid) {
         if(!inProgressRectMap.has(drawEvent.guid)){
-            inProgressRectMap.set(drawEvent.guid, draw.rect());
+            if (drawEvent.type == 'line') {
+                inProgressRectMap.set(drawEvent.guid, draw.line());
+            } else {
+                inProgressRectMap.set(drawEvent.guid, draw.rect());
+            }
+
         }
         inProgressRectMap.get(drawEvent.guid)
         .width(drawEvent.width)
