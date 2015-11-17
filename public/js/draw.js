@@ -128,19 +128,25 @@ function drawObject(drawEvent){
         }
         if (drawEvent.type == 'line') {
             draw.line(drawEvent.x, drawEvent.y, drawEvent.x2, drawEvent.y2)
-                .stroke({ width: 1, color: drawEvent.color});
+                .stroke({ width: 1, color: drawEvent.color})
+                .attr({objId: drawEvent.objId})
+                .click(clickHandler);
         } else if (drawEvent.type == 'circle') {
-            draw.circle(drawEvent.rx*2).move(drawEvent.x-drawEvent.rx, drawEvent.y-drawEvent.ry).fill(drawEvent.color);
+            draw.circle(drawEvent.rx*2).move(drawEvent.x-drawEvent.rx, drawEvent.y-drawEvent.ry).fill(drawEvent.color)
+            .attr({objId: drawEvent.objId});
         } else if (drawEvent.type == 'text') {
             draw.text(drawEvent.text)
                 .move(drawEvent.x, drawEvent.y)
-                .fill(color);
+                .fill(color)
+                .attr({objId: drawEvent.objId})
+                .click(clickHandler);
         } else {
             draw.rect(drawEvent.width, drawEvent.height)
                 .move(drawEvent.x, drawEvent.y)
-                .fill(drawEvent.color);
+                .fill(drawEvent.color)
+                .attr({objId: drawEvent.objId})
+                .click(clickHandler);
         }
-
     }
 }
 
@@ -206,13 +212,11 @@ function calculateTextSize(text, width, height) {
 }
 
 
-function deleteDrawing(index) {
-    console.log(draw.children().length + " - removing " + index);
-    draw.get(index).remove();
+function deleteDrawing(objId) {
+    console.log("removing objId " + objId);
 }
 
 function clickHandler() {
-    //this.remove();
     socket.emit('deleteDrawing', this.node.getAttribute("objId"));
 }
 

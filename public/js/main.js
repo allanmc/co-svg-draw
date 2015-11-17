@@ -21,8 +21,8 @@ $(function(){
       clearDrawing();
     });
 
-    socket.on('deleteDrawing', function(index){
-      deleteDrawing(index);
+    socket.on('deleteDrawing', function(objId){
+      deleteDrawing(objId);
     });
 });
 
