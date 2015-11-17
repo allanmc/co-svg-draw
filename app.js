@@ -11,7 +11,7 @@ app.use('/bower_components',express.static(__dirname + '/bower_components'));
 
 io.on('connection',function(socket){
     console.log('Connected to socket');
-    drawEvents.forEach((value, key) => {
+    drawEvents.forEach( function(value, key) {
         console.log('Emitting server events ' + key);
         io.emit('drawing', drawEvents.get(key));
     });
