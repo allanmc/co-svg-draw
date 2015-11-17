@@ -76,7 +76,7 @@ draw.on('mouseup', function(e){
 	rect.draw('stop', e);
 
     drawEvent.objId = guid();
-    rect.attr({objId: drawEvent.objId});
+    rect.attr({objid: drawEvent.objId});
 
     if (tool == 'line') {
         var points = rect.array().value;
@@ -121,32 +121,32 @@ draw.on('drawstop', function(){
 });
 
 function drawObject(drawEvent){
-    if(clientGuid != drawEvent.guid) {
-        if(inProgressRectMap.has(drawEvent.guid)){
+    if (clientGuid != drawEvent.guid) {
+        if (inProgressRectMap.has(drawEvent.guid)) {
             inProgressRectMap.get(drawEvent.guid).remove();
             inProgressRectMap.delete(drawEvent.guid);
         }
+        var svgObj;
         if (drawEvent.type == 'line') {
-            draw.line(drawEvent.x, drawEvent.y, drawEvent.x2, drawEvent.y2)
-                .stroke({ width: 1, color: drawEvent.color})
-                .attr({objId: drawEvent.objId})
+            svgObj = draw.line(drawEvent.x, drawEvent.y, drawEvent.x2, drawEvent.y2)
+                .stroke({width: 1, color: drawEvent.color})
                 .click(clickHandler);
         } else if (drawEvent.type == 'circle') {
-            draw.circle(drawEvent.rx*2).move(drawEvent.x-drawEvent.rx, drawEvent.y-drawEvent.ry).fill(drawEvent.color)
-            .attr({objId: drawEvent.objId});
+            svgObj = draw.circle(drawEvent.rx * 2)
+                .move(drawEvent.x - drawEvent.rx, drawEvent.y - drawEvent.ry)
+                .fill(drawEvent.color);
         } else if (drawEvent.type == 'text') {
-            draw.text(drawEvent.text)
+            svgObj = draw.text(drawEvent.text)
                 .move(drawEvent.x, drawEvent.y)
-                .fill(color)
-                .attr({objId: drawEvent.objId})
-                .click(clickHandler);
+                .fill(drawEvent.color);
         } else {
-            draw.rect(drawEvent.width, drawEvent.height)
+            svgObj = draw.rect(drawEvent.width, drawEvent.height)
                 .move(drawEvent.x, drawEvent.y)
-                .fill(drawEvent.color)
-                .attr({objId: drawEvent.objId})
-                .click(clickHandler);
+                .fill(drawEvent.color);
+
         }
+        svgObj.attr({objid: drawEvent.objId})
+            .click(clickHandler);
     }
 }
 
@@ -214,10 +214,11 @@ function calculateTextSize(text, width, height) {
 
 function deleteDrawing(objId) {
     console.log("removing objId " + objId);
+    $('svg > [objid='+objId+']').remove();
 }
 
 function clickHandler() {
-    socket.emit('deleteDrawing', this.node.getAttribute("objId"));
+    socket.emit('deleteDrawing', this.node.getAttribute("objid"));
 }
 
 function toggleDelete(elm) {
