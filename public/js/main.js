@@ -20,6 +20,10 @@ $(function(){
     socket.on('clearDrawing', function(){
       clearDrawing();
     });
+
+    socket.on('deleteDrawing', function(index){
+      deleteDrawing(index);
+    });
 });
 
 

@@ -2,11 +2,12 @@
 var draw = SVG('drawing')
 var socket = io();
 
+var deleting = false;
 /* draw rectangle */
 var rect;
 var inProgressRectMap = new Map();
 var drawEvent={};
-var guid = guid();
+var clientGuid = guid();
 var color = '#D91E1E';
 var tool = 'square';
 
@@ -19,6 +20,9 @@ function setTool(tool) {
 }
 
 draw.on('mousedown', function(e){
+    if (deleting) {
+        return;
+    }
     if (tool == 'line') {
         rect = draw.line()
             .stroke({ width: 1, color: color });
@@ -31,11 +35,12 @@ draw.on('mousedown', function(e){
         rect = draw.rect()
             .fill(color);
     }
+
     rect.draw(e);
 }, false);
 
 draw.on('mousemove', function (e) {
-	if (e.buttons == 1) {
+	if (e.buttons == 1 && !deleting) {
 
         if (tool == 'line') {
             var points = rect.array().value;
@@ -56,7 +61,7 @@ draw.on('mousemove', function (e) {
             drawEvent.y = tbox.y;
         }
         drawEvent.type = tool;
-        drawEvent.guid = guid;
+        drawEvent.guid = clientGuid;
         drawEvent.color = color;
 
 
@@ -65,7 +70,13 @@ draw.on('mousemove', function (e) {
 });
 
 draw.on('mouseup', function(e){
+    if (deleting) {
+        return;
+    }
 	rect.draw('stop', e);
+
+    drawEvent.objId = guid();
+    rect.attr({objId: drawEvent.objId});
 
     if (tool == 'line') {
         var points = rect.array().value;
@@ -86,7 +97,7 @@ draw.on('mouseup', function(e){
         drawEvent.y = tbox.y;
     }
     drawEvent.type = tool;
-    drawEvent.guid = guid;
+    drawEvent.guid = clientGuid;
     drawEvent.color = color;
 
     if (tool == 'text') {
@@ -99,6 +110,8 @@ draw.on('mouseup', function(e){
         );
     }
 
+    rect.click(clickHandler);
+
 	socket.emit('drawing', drawEvent);
 
 }, false);
@@ -107,19 +120,8 @@ draw.on('drawstop', function(){
 	// remove listener
 });
 
-/* write text at the back */
-draw.text('Co SVG Draw')
-	.back()
-	.fill('#ccc')
-	.move('50%', '40%')
-	.font({
-		family: 'Source Sans Pro',
-		size: 18,
-		anchor: 'middle'
-	});
-
 function drawObject(drawEvent){
-    if(guid != drawEvent.guid) {
+    if(clientGuid != drawEvent.guid) {
         if(inProgressRectMap.has(drawEvent.guid)){
             inProgressRectMap.get(drawEvent.guid).remove();
             inProgressRectMap.delete(drawEvent.guid);
@@ -143,7 +145,7 @@ function drawObject(drawEvent){
 }
 
 function drawObjectInProgress(drawEvent){
-    if(guid != drawEvent.guid) {
+    if(clientGuid != drawEvent.guid) {
         if(!inProgressRectMap.has(drawEvent.guid)){
             if (drawEvent.type == 'line') {
                 inProgressRectMap.set(drawEvent.guid, draw.line());
@@ -201,4 +203,24 @@ function calculateTextSize(text, width, height) {
     test.style.fontSize = fontSize;
     var height = (test.clientHeight + 1) + "px";
     var width = (test.clientWidth + 1) + "px";
+}
+
+
+function deleteDrawing(index) {
+    console.log(draw.children().length + " - removing " + index);
+    draw.get(index).remove();
+}
+
+function clickHandler() {
+    //this.remove();
+    socket.emit('deleteDrawing', this.node.getAttribute("objId"));
+}
+
+function toggleDelete(elm) {
+    deleting = !deleting;
+    if (deleting) {
+        $(elm).text("Stop");
+    } else {
+        $(elm).text("Delete");
+    }
 }

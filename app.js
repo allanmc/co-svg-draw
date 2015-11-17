@@ -30,6 +30,11 @@ io.on('connection',function(socket){
         drawEvents = [];
         io.emit('clearDrawing');
     });
+    socket.on('deleteDrawing', function(index){
+        console.log('deleteDrawing: got ' + drawEvents.length + " removing " + index);
+        drawEvents.splice(index-1, 1);
+        io.emit('deleteDrawing', index);
+    });
 });
 
 http.listen(80,function(){
