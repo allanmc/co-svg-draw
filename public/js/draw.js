@@ -1,9 +1,11 @@
 /* create an svg drawing */
-var draw = SVG('drawing');
-
+var draw = SVG('drawing')
+var socket = io();
 
 /* draw rectangle */
 var rect;
+var drawEvent={};
+var guid = guid();
 var color = '#66ccff';
 
 function updateColor(picker) {
@@ -11,8 +13,8 @@ function updateColor(picker) {
 }
 
 draw.on('mousedown', function(e){
-	rect = draw.rect().fill(color);
-	rect.draw(e);
+    rect = draw.rect().fill(color);
+    rect.draw(e);
 }, false);
 
 draw.on('mousemove', function (e) {
@@ -23,6 +25,18 @@ draw.on('mousemove', function (e) {
 
 draw.on('mouseup', function(e){
 	rect.draw('stop', e);
+
+    var tbox = rect.tbox();
+
+	drawEvent.width = tbox.width;
+	drawEvent.height = tbox.height;
+	drawEvent.x = tbox.x;
+	drawEvent.y = tbox.y;
+	drawEvent.type = 'rect';
+	drawEvent.guid = guid;
+	drawEvent.color = color;
+
+	socket.emit('drawing', drawEvent);
 }, false);
 
 draw.on('drawstop', function(){
@@ -39,3 +53,19 @@ draw.text('Co SVG Draw')
 		size: 18,
 		anchor: 'middle'
 	});
+
+function drawObject(drawEvent){
+    if(guid != drawEvent.guid) {
+        var rect = draw.rect(drawEvent.width,drawEvent.height).move(drawEvent.x,drawEvent.y).fill(drawEvent.color);
+    }
+}
+
+function guid() {
+  function s4() {
+    return Math.floor((1 + Math.random()) * 0x10000)
+      .toString(16)
+      .substring(1);
+  }
+  return s4() + s4() + '-' + s4() + '-' + s4() + '-' +
+    s4() + '-' + s4() + s4() + s4();
+}
