@@ -1,0 +1,22 @@
+{
+  "name": "co-svg-draw",
+  "description": "",
+  "main": "app.js",
+  "authors": [
+    "Allan Mørk Christensen <axc@avaleo.net>"
+  ],
+  "license": "ISC",
+  "homepage": "https://github.com/allanmc/co-svg-draw",
+  "moduleType": [],
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "socket.io": "~1.3.7",
+    "jquery": "~2.1.4"
+  }
+}
