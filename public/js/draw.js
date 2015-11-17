@@ -101,3 +101,11 @@ function guid() {
   return s4() + s4() + '-' + s4() + '-' + s4() + '-' +
     s4() + '-' + s4() + s4() + s4();
 }
+
+function emitClearEvent() {
+    socket.emit('clearDrawing');
+}
+
+function clearDrawing() {
+    draw.clear();
+}

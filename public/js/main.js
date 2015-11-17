@@ -16,4 +16,10 @@ $(function(){
     socket.on('drawingProgress', function(msg){
       drawObjectInProgress(msg);
     });
+
+    socket.on('clearDrawing', function(){
+      clearDrawing();
+    });
 });
+
+

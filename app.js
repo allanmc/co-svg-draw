@@ -25,7 +25,11 @@ io.on('connection',function(socket){
     socket.on('drawingProgress', function(msg){
         io.emit('drawingProgress', msg);
     });
-
+    socket.on('clearDrawing', function(){
+        console.log('clearDrawing');
+        drawEvents = [];
+        io.emit('clearDrawing');
+    });
 });
 
 http.listen(80,function(){
