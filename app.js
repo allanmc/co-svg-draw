@@ -4,24 +4,24 @@ var app = express();
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
 
-var drawEvents = new Map();
+var drawEvents = [];
 
 app.use(express.static('public'));
 app.use('/bower_components',express.static(__dirname + '/bower_components'));
 
 io.on('connection',function(socket){
     console.log('Connected to socket');
-    drawEvents.forEach( function(value, key) {
-        console.log('Emitting server events ' + key);
-        io.emit('drawing', drawEvents.get(key));
-    });
+    for(var i in drawEvents){
+        console.log('Emitting server events ' + i);
+        io.emit('drawing', drawEvents[i]);
+    };
 
     socket.on('disconnect', function(){
         console.log('Disconnect to socket');
     });
     socket.on('drawing', function(msg){
     console.log('drawing ' + msg.objId);
-        drawEvents.set(msg.objId, msg);
+        drawEvents[msg.objId] = msg;
         io.emit('drawing', msg);
     });
     socket.on('drawingProgress', function(msg){
@@ -29,12 +29,12 @@ io.on('connection',function(socket){
     });
     socket.on('clearDrawing', function(){
         console.log('clearDrawing');
-        drawEvents = new Map();
+        drawEvents = [];
         io.emit('clearDrawing');
     });
     socket.on('deleteDrawing', function(objId){
         console.log('deleteDrawing: removing objId ' + objId);
-        drawEvents.delete(objId);
+        delete drawEvents[objId];
         io.emit('deleteDrawing', objId);
     });
 });
