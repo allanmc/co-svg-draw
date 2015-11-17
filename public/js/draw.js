@@ -7,7 +7,7 @@ var rect;
 var inProgressRectMap = new Map();
 var drawEvent={};
 var guid = guid();
-var color = '#66ccff';
+var color = '#D91E1E';
 var tool = 'square';
 
 function updateColor(picker) {
@@ -20,9 +20,11 @@ function setTool(tool) {
 
 draw.on('mousedown', function(e){
     if (tool == 'line') {
-        rect = draw.line(0, 0, 0, 0).stroke({ width: 1 }).fill(color);
+        rect = draw.line(0, 0, 0, 0)
+            .stroke({ width: 1, color: color });
     } else {
-        rect = draw.rect().fill(color);
+        rect = draw.rect()
+            .fill(color);
     }
     rect.draw(e);
 }, false);
@@ -97,9 +99,12 @@ function drawObject(drawEvent){
             inProgressRectMap.delete(drawEvent.guid);
         }
         if (drawEvent.type == 'line') {
-            draw.line(drawEvent.x, drawEvent.y, drawEvent.x2, drawEvent.y2).stroke({ width: 1 }).fill(color);
+            draw.line(drawEvent.x, drawEvent.y, drawEvent.x2, drawEvent.y2)
+                .stroke({ width: 1, color: drawEvent.color});
         } else {
-            draw.rect(drawEvent.width, drawEvent.height).move(drawEvent.x,drawEvent.y).fill(drawEvent.color);
+            draw.rect(drawEvent.width, drawEvent.height)
+                .move(drawEvent.x,drawEvent.y)
+                .fill(drawEvent.color);
         }
 
     }
@@ -109,7 +114,7 @@ function drawObjectInProgress(drawEvent){
     if(guid != drawEvent.guid) {
         if(!inProgressRectMap.has(drawEvent.guid)){
             if (drawEvent.type == 'line') {
-                inProgressRectMap.set(drawEvent.guid, draw.line().stroke({ width: 1 }));
+                inProgressRectMap.set(drawEvent.guid, draw.line());
             } else {
                 inProgressRectMap.set(drawEvent.guid, draw.rect());
             }
@@ -117,15 +122,17 @@ function drawObjectInProgress(drawEvent){
         }
         var svgObj = inProgressRectMap.get(drawEvent.guid);
         if (drawEvent.type == 'line') {
-            svgObj.plot(drawEvent.x, drawEvent.y, drawEvent.x2, drawEvent.y2);
+            svgObj.plot(drawEvent.x, drawEvent.y, drawEvent.x2, drawEvent.y2)
+                .stroke({ width: 1, color: drawEvent.color });
         } else {
 
             svgObj.width(drawEvent.width)
                 .height(drawEvent.height)
-                .move(drawEvent.x, drawEvent.y);
+                .move(drawEvent.x, drawEvent.y)
+                .fill(drawEvent.color);
         }
 
-        svgObj.fill(drawEvent.color).front();
+        svgObj.front();
     }
 }
 
