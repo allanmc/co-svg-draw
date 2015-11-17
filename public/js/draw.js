@@ -8,9 +8,14 @@ var inProgressRectMap = new Map();
 var drawEvent={};
 var guid = guid();
 var color = '#66ccff';
+var tool = 'square';
 
 function updateColor(picker) {
 	color = picker.toHEXString();
+}
+
+function setTool(tool) {
+	this.tool = tool;
 }
 
 draw.on('mousedown', function(e){

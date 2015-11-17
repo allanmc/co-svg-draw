@@ -31,6 +31,12 @@ html, body {
     user-select: none;
 }
 
-.active {
-    border: 5px solid black;
+#tools {
+    display: inline;
+    margin-left: 10px;
+    margin-right: 20px;
+}
+#tools label {
+    padding-left: 25px;
+    margin-right: 20px;
 }
