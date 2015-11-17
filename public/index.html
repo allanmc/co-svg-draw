@@ -7,7 +7,12 @@
 	<!-- bower:css -->
 	<!-- endbower -->
 </head>
-<body>
+<body class="noselect">
+<div id="toolbar">
+	<button class="jscolor {valueElement: null, onFineChange:'updateColor(this)',value:'66ccff'}" style="border:2px solid black">
+		Color
+	</button>
+</div>
 <div id="drawing"></div>
 
 <!-- bower:js -->
@@ -16,14 +21,8 @@
 <script src="../bower_components/svg.draw.js/dist/svg.draw.js"></script>
 <!-- endbower -->
 <script src="../bower_components/socket.io-client/socket.io.js"></script>
+<script src="./lib/jscolor/jscolor.min.js"></script>
 <script src="./js/draw.js"></script>
 <script src="./js/main.js"></script>
-
-
-<ul id="messages"></ul>
-<form action="">
-	<input id="m" autocomplete="off" /><button>Send</button>
-</form>
-
 </body>
 </html>

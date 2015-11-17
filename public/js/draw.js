@@ -1,11 +1,17 @@
 /* create an svg drawing */
-var draw = SVG('drawing')
+var draw = SVG('drawing');
+
 
 /* draw rectangle */
 var rect;
+var color = '#66ccff';
+
+function updateColor(picker) {
+	color = picker.toHEXString();
+}
 
 draw.on('mousedown', function(e){
-	rect = draw.rect().fill('#f09');
+	rect = draw.rect().fill(color);
 	rect.draw(e);
 }, false);
 
