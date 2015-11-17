@@ -19,10 +19,13 @@ io.on('connection',function(socket){
         console.log('Disconnect to socket');
     });
     socket.on('drawing', function(msg){
-        console.log('drawing: ' + msg);
         drawEvents.push(msg);
         io.emit('drawing', msg);
     });
+    socket.on('drawingProgress', function(msg){
+        io.emit('drawingProgress', msg);
+    });
+
 });
 
 http.listen(80,function(){

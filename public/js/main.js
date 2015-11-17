@@ -10,7 +10,10 @@ $(function(){
     $('#messages').append($('<li>').text(msg));
   });
     socket.on('drawing', function(msg){
-      $('#messages').append($('<li>').text(JSON.stringify(msg)));
       drawObject(msg);
+    });
+
+    socket.on('drawingProgress', function(msg){
+      drawObjectInProgress(msg);
     });
 });
