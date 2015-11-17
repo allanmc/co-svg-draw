@@ -22,6 +22,8 @@ draw.on('mousedown', function(e){
     if (tool == 'line') {
         rect = draw.line(0, 0, 0, 0)
             .stroke({ width: 1, color: color });
+    }else if(tool == 'circle'){
+        rect = draw.circle(0).fill(color);
     } else {
         rect = draw.rect()
             .fill(color);
@@ -38,6 +40,11 @@ draw.on('mousemove', function (e) {
             drawEvent.y = points[0][1];
             drawEvent.x2 = points[1][0];
             drawEvent.y2 = points[1][1];
+        }else if(tool == 'circle'){
+            drawEvent.x = rect.cx();
+            drawEvent.y = rect.cy();
+            drawEvent.rx = rect.rx();
+            drawEvent.ry = rect.ry();
         } else {
             var tbox = rect.tbox();
             drawEvent.width = tbox.width;
@@ -63,6 +70,11 @@ draw.on('mouseup', function(e){
         drawEvent.y = points[0][1];
         drawEvent.x2 = points[1][0];
         drawEvent.y2 = points[1][1];
+    }else if(tool == 'circle'){
+        drawEvent.x = rect.cx();
+        drawEvent.y = rect.cy();
+        drawEvent.rx = rect.rx();
+        drawEvent.ry = rect.ry();
     } else {
         var tbox = rect.tbox();
         drawEvent.width = tbox.width;
@@ -99,8 +111,10 @@ function drawObject(drawEvent){
             inProgressRectMap.delete(drawEvent.guid);
         }
         if (drawEvent.type == 'line') {
-            draw.line(drawEvent.x, drawEvent.y, drawEvent.x2, drawEvent.y2)
-                .stroke({ width: 1, color: drawEvent.color});
+                       draw.line(drawEvent.x, drawEvent.y, drawEvent.x2, drawEvent.y2)
+                           .stroke({ width: 1, color: drawEvent.color});
+        }else if (drawEvent.type == 'circle') {
+            draw.circle(drawEvent.rx*2).move(drawEvent.x-drawEvent.rx, drawEvent.y-drawEvent.ry).fill(drawEvent.color);
         } else {
             draw.rect(drawEvent.width, drawEvent.height)
                 .move(drawEvent.x,drawEvent.y)
@@ -115,6 +129,8 @@ function drawObjectInProgress(drawEvent){
         if(!inProgressRectMap.has(drawEvent.guid)){
             if (drawEvent.type == 'line') {
                 inProgressRectMap.set(drawEvent.guid, draw.line());
+            }else if (drawEvent.type == 'circle') {
+                inProgressRectMap.set(drawEvent.guid, draw.circle().move(drawEvent.x, drawEvent.y));
             } else {
                 inProgressRectMap.set(drawEvent.guid, draw.rect());
             }
@@ -122,10 +138,12 @@ function drawObjectInProgress(drawEvent){
         }
         var svgObj = inProgressRectMap.get(drawEvent.guid);
         if (drawEvent.type == 'line') {
-            svgObj.plot(drawEvent.x, drawEvent.y, drawEvent.x2, drawEvent.y2)
-                .stroke({ width: 1, color: drawEvent.color });
+                       svgObj.plot(drawEvent.x, drawEvent.y, drawEvent.x2, drawEvent.y2)
+                           .stroke({ width: 1, color: drawEvent.color });
+        }else if (drawEvent.type == 'circle') {
+            svgObj.radius(drawEvent.rx)
+            .fill(drawEvent.color);
         } else {
-
             svgObj.width(drawEvent.width)
                 .height(drawEvent.height)
                 .move(drawEvent.x, drawEvent.y)
