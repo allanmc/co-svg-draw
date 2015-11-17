@@ -1,9 +1,10 @@
 var express = require('express');
+var path = require('path');
 var app = express();
 
  /* serves main page */
  app.get("/", function(req, res) {
-    res.sendfile('public/index.html');
+    res.sendFile(path.join(__dirname, 'public', 'index.html'));
  });
 
  /* serves all the static files */
