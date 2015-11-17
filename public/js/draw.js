@@ -20,8 +20,11 @@ function setTool(tool) {
 
 draw.on('mousedown', function(e){
     if (tool == 'line') {
-        rect = draw.line(0, 0, 0, 0)
-            .stroke({ width: 1, color: color });
+        rect = draw.line()
+            .stroke({width: 1, color: color});
+    } else if (tool == 'text') {
+        rect = draw.rect()
+            .stroke({width: 1, color: color}).fill({opacity: 0.2, color: color});
     } else {
         rect = draw.rect()
             .fill(color);
@@ -74,7 +77,18 @@ draw.on('mouseup', function(e){
     drawEvent.guid = guid;
     drawEvent.color = color;
 
+    if (tool == 'text') {
+        // Replace selecting box with text
+        drawEvent.text = prompt("Text:");
+        rect.replace(
+            draw.text(drawEvent.text)
+                .move(drawEvent.x, drawEvent.y)
+                .fill(color)
+        );
+    }
+
 	socket.emit('drawing', drawEvent);
+
 }, false);
 
 draw.on('drawstop', function(){
@@ -100,10 +114,14 @@ function drawObject(drawEvent){
         }
         if (drawEvent.type == 'line') {
             draw.line(drawEvent.x, drawEvent.y, drawEvent.x2, drawEvent.y2)
-                .stroke({ width: 1, color: drawEvent.color});
+                .stroke({width: 1, color: drawEvent.color});
+        } else if (drawEvent.type == 'text') {
+            draw.text(drawEvent.text)
+                .move(drawEvent.x, drawEvent.y)
+                .fill(color);
         } else {
             draw.rect(drawEvent.width, drawEvent.height)
-                .move(drawEvent.x,drawEvent.y)
+                .move(drawEvent.x, drawEvent.y)
                 .fill(drawEvent.color);
         }
 
@@ -123,7 +141,13 @@ function drawObjectInProgress(drawEvent){
         var svgObj = inProgressRectMap.get(drawEvent.guid);
         if (drawEvent.type == 'line') {
             svgObj.plot(drawEvent.x, drawEvent.y, drawEvent.x2, drawEvent.y2)
-                .stroke({ width: 1, color: drawEvent.color });
+                .stroke({width: 1, color: drawEvent.color});
+        } else if (drawEvent.type == 'text') {
+            svgObj.width(drawEvent.width)
+                .height(drawEvent.height)
+                .move(drawEvent.x, drawEvent.y)
+                .stroke({width: 1, color: drawEvent.color})
+                .fill({opacity: 0.2, color: drawEvent.color});
         } else {
 
             svgObj.width(drawEvent.width)
@@ -152,4 +176,11 @@ function emitClearEvent() {
 
 function clearDrawing() {
     draw.clear();
+}
+
+function calculateTextSize(text, width, height) {
+    var test = document.createTextNode(text);
+    test.style.fontSize = fontSize;
+    var height = (test.clientHeight + 1) + "px";
+    var width = (test.clientWidth + 1) + "px";
 }
