@@ -2,27 +2,34 @@
 var draw = SVG('drawing')
 
 /* draw rectangle */
-var rect = draw.rect(50,50).move(100,100).fill('#f09')
+var rect;
 
-/* make rectangle jump and change color on mouse over */
-rect.mouseover(function() {
-	this.animate({duration: 500, ease: '<'})
-		.move(400 * Math.random(), 400 * Math.random())
-		.rotate(-45 + 90 * Math.random())
-		.fill({
-			r: ~~(Math.random() * 255)
-			, g: ~~(Math.random() * 255)
-			, b: ~~(Math.random() * 255)
-		});
+draw.on('mousedown', function(e){
+	rect = draw.rect().fill('#f09');
+	rect.draw(e);
+}, false);
+
+draw.on('mousemove', function (e) {
+	if (e.buttons == 1) {
+		// TODO emit e?
+	}
+});
+
+draw.on('mouseup', function(e){
+	rect.draw('stop', e);
+}, false);
+
+draw.on('drawstop', function(){
+	// remove listener
 });
 
 /* write text at the back */
-draw.text('svg.js playground\ntry to grab the rectangle!')
+draw.text('Co SVG Draw')
 	.back()
 	.fill('#ccc')
 	.move('50%', '40%')
 	.font({
-		family: 'Source Sans Pro'
-		, size: 18
-		, anchor: 'middle'
+		family: 'Source Sans Pro',
+		size: 18,
+		anchor: 'middle'
 	});
