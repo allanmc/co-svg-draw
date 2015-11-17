@@ -109,18 +109,23 @@ function drawObjectInProgress(drawEvent){
     if(guid != drawEvent.guid) {
         if(!inProgressRectMap.has(drawEvent.guid)){
             if (drawEvent.type == 'line') {
-                inProgressRectMap.set(drawEvent.guid, draw.line());
+                inProgressRectMap.set(drawEvent.guid, draw.line().stroke({ width: 1 }));
             } else {
                 inProgressRectMap.set(drawEvent.guid, draw.rect());
             }
 
         }
-        inProgressRectMap.get(drawEvent.guid)
-        .width(drawEvent.width)
-        .height(drawEvent.height)
-        .move(drawEvent.x,drawEvent.y)
-        .fill(drawEvent.color)
-        .front();
+        var svgObj = inProgressRectMap.get(drawEvent.guid);
+        if (drawEvent.type == 'line') {
+            svgObj.plot(drawEvent.x, drawEvent.y, drawEvent.x2, drawEvent.y2);
+        } else {
+
+            svgObj.width(drawEvent.width)
+                .height(drawEvent.height)
+                .move(drawEvent.x, drawEvent.y);
+        }
+
+        svgObj.fill(drawEvent.color).front();
     }
 }
 
