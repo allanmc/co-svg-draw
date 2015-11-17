@@ -14,6 +14,6 @@ io.on('connection',function(socket){
   })
 });
 
-http.listen(80,function(){
+http.listen(80, function(){
   console.log('Example app listening at http://localhost:80');
 });
