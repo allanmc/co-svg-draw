@@ -5,13 +5,20 @@
 	<title>Co SVG Draw</title>
 	<link rel="stylesheet" href="./css/main.css">
 	<!-- bower:css -->
+	<link rel="stylesheet" href="../bower_components/Materialize/bin/materialize.css" />
 	<!-- endbower -->
+	<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
 </head>
 <body class="noselect">
 <div id="toolbar">
-	<button class="jscolor {valueElement: null, onFineChange:'updateColor(this)',value:'66ccff'}" style="border:2px solid black">
-		Color
+	<button class="waves-effect waves-light btn jscolor {valueElement: null, onFineChange:'updateColor(this)',value:'66ccff'}">
+		<i class="material-icons left">palette</i>
 	</button>
+	<a class="waves-effect waves-light btn active">Square</a>
+	<a class="waves-effect waves-light btn">Circle</a>
+	<a class="waves-effect waves-light btn">Line</a>
+
+	<a class="waves-effect waves-light btn">Clear</a>
 </div>
 <div id="drawing"></div>
 
@@ -19,6 +26,7 @@
 <script src="../bower_components/jquery/dist/jquery.js"></script>
 <script src="../bower_components/svg.js/dist/svg.js"></script>
 <script src="../bower_components/svg.draw.js/dist/svg.draw.js"></script>
+<script src="../bower_components/Materialize/bin/materialize.js"></script>
 <!-- endbower -->
 <script src="../bower_components/socket.io-client/socket.io.js"></script>
 <script src="./lib/jscolor/jscolor.min.js"></script>
